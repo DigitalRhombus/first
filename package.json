@@ -1,0 +1,20 @@
+{
+  "name": "jewellery_project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "both": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\"",
+    "vercel-deploy": "concurrently \"cd client && vercel --prod --yes\" \"cd server && vercel --prod --yes\"",
+    "vercel-client-deploy": "cd client && vercel --prod --yes",
+    "vercel-server-deploy": "cd server && vercel --prod --yes"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "concurrently": "^9.1.2"
+  }
+}
