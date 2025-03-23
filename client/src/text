@@ -1,0 +1,309 @@
+
+
+
+import  { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FiTrash, FiPlus } from "react-icons/fi";
+
+const AdminDashboard = () => {
+  const [accessories, setAccessories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchAccessories();
+  }, []);
+
+  const fetchAccessories = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/api/accessories/all");
+      if (!response.ok) throw new Error("Failed to fetch accessories");
+      const data = await response.json();
+      setAccessories(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      <aside className="w-64 bg-white p-6 shadow-md">
+        <h1 className="text-xl font-bold mb-6">LuxeGems Admin</h1>
+        <nav>
+          <ul className="space-y-4">
+            <li className="text-blue-600 font-semibold">Dashboard</li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div className="flex-1 p-6">
+        <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-4">Product Management</h3>
+
+          <div className="flex space-x-4 mb-4">
+            <Link
+              to="/add-product"
+              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2"
+            >
+              <FiPlus /> <span>Add Product</span>
+            </Link>
+            <Link
+              to="/remove-product"
+              className="bg-red-500 text-white px-4 py-2 rounded flex items-center space-x-2"
+            >
+              <FiTrash /> <span>Remove Product</span>
+            </Link>
+          </div>
+
+          {loading ? (
+            <p className="text-gray-600">Loading products...</p>
+          ) : error ? (
+            <p className="text-red-500">Error: {error}</p>
+          ) : (
+            <table className="w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-300">
+              <thead className="bg-gray-100">
+                <tr className="border-b border-gray-300">
+                  <th className="p-4 text-left font-semibold">Name</th>
+                  <th className="p-4 text-left font-semibold">Category</th>
+                  <th className="p-4 text-left font-semibold">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accessories.map(({ _id, name, price, category }) => (
+                  <tr key={_id} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                    <td className="p-4 text-gray-700">{name}</td>
+                    <td className="p-4 text-gray-500">{category}</td>
+                    <td className="p-4 font-bold text-blue-600">${price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+
+
+
+
+
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
+const AddProductPopup = ({  onAdd }) => {
+  const popupRef = useRef(null);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    imgUrl: "",
+    category: "",
+    stock: "",
+  });
+
+  const categories = [
+    "Rings",
+    "Earrings",
+    "NecklacesAndPendants",
+    "BraceletsAndBangles",
+    "Chains",
+    "NosePinsAndNath",
+  ];
+
+  const handleOutsideClick = (e) => {
+    if (popupRef.current && !popupRef.current.contains(e.target)) {
+      onClose();
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.price || !formData.category) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8001/api/accessories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add accessory");
+      }
+
+      alert("Accessory added successfully!");
+      onAdd();
+      onClose();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleOutsideClick}>
+      <div ref={popupRef} className="bg-white p-6 rounded-lg shadow-md w-96">
+        <h3 className="text-lg font-semibold mb-4">Add Product</h3>
+        <input type="text" name="name" placeholder="Product Name" className="w-full p-2 border rounded mb-2" onChange={handleChange} />
+        <input type="text" name="description" placeholder="Description" className="w-full p-2 border rounded mb-2" onChange={handleChange} />
+        <input type="number" name="price" placeholder="Price" className="w-full p-2 border rounded mb-2" onChange={handleChange} />
+        <input type="text" name="imgUrl" placeholder="Image URL" className="w-full p-2 border rounded mb-2" onChange={handleChange} />
+        <input type="number" name="stock" placeholder="Stock Quantity" className="w-full p-2 border rounded mb-2" onChange={handleChange} />
+        <select name="category" className="w-full p-2 border rounded mb-4" onChange={handleChange}>
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+        <div className="flex justify-end space-x-2">
+          <button className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" onClick={() => navigate("/admin")}>Cancel</button>
+          <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" onClick={handleSubmit}>Add</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddProductPopup;
+
+
+
+
+
+
+
+
+
+
+
+
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+const RemoveProductPopup = () => {
+  const [accessories, setAccessories] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/api/accessories/all");
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      setAccessories(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveProduct = async () => {
+    if (!selectedProduct) return alert("Please select a product");
+
+    try {
+      const response = await fetch(
+        `http://localhost:8001/api/accessories/${selectedProduct}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to remove product");
+
+      alert("Product removed successfully");
+      setAccessories(
+        accessories.filter((item) => item._id !== selectedProduct)
+      );
+      setSelectedProduct(""); // Reset selection
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-bold mb-4">Remove Product</h2>
+
+        {loading ? (
+          <p>Loading products...</p>
+        ) : error ? (
+          <p className="text-red-500">Error: {error}</p>
+        ) : (
+          <select
+            className="border p-2 w-full mb-4"
+            value={selectedProduct}
+            onChange={(e) => setSelectedProduct(e.target.value)}
+          >
+            <option value="">Select a product</option>
+            {accessories.map(({ _id, name }) => (
+              <option key={_id} value={_id}>
+                {name}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <div className="flex space-x-4">
+          <button
+            onClick={handleRemoveProduct}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Remove
+          </button>
+          <button
+            onClick={() => navigate("/admin")}
+            className="bg-gray-400 text-white px-4 py-2 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RemoveProductPopup;
+
+
+
+
+
+
+const mongoose = require("mongoose");
+
+const accessorySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  imgUrl: { type: String, required: true },
+  category: {
+    type: String,
+    enum: ["Rings", "Earrings", "NecklacesAndPendants", "BraceletsAndBangles", "Chains", "NosePinsAndNath"],
+    required: true
+  },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Accessory = mongoose.model("Accessory", accessorySchema);
+module.exports = Accessory;
