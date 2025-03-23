@@ -16,7 +16,7 @@ COPY . .
 
 RUN npm run setup
 
-EXPOSE 8080 8000
+EXPOSE 5173 8001
 
 CMD ["npm","run","deploy"]
 
