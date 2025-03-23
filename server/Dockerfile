@@ -22,7 +22,7 @@ COPY --from=backend-builder /app .
 COPY .env .env
 
 # Port
-EXPOSE 8080
+EXPOSE 8001
 
 # App
 CMD ["npm", "start"]
