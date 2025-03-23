@@ -1,0 +1,51 @@
+{
+  "name": "jewellery_project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "dev2": "npm run build && npm run preview"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
+    "@paypal/react-paypal-js": "^8.8.2",
+    "@reduxjs/toolkit": "^2.6.1",
+    "@shadcn/ui": "^0.0.4",
+    "@stripe/react-stripe-js": "^3.5.1",
+    "@stripe/stripe-js": "^6.1.0",
+    "axios": "^1.8.4",
+    "firebase": "^11.4.0",
+    "framer-motion": "^12.5.0",
+    "jewellery_project": "file:",
+    "lucide-react": "^0.482.0",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.10.9",
+    "react-confetti": "^6.4.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "react-qrcode-logo": "^3.0.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.3.0",
+    "react-toastify": "^11.0.5",
+    "yub": "^0.11.1",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.14"
+  }
+}
